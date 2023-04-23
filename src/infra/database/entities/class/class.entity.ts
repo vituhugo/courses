@@ -31,11 +31,13 @@ export class Class {
   sections: Section[];
 
   @Expose({ name: 'progress' })
-  @Transform(({ value, obj }: { value: Progress[], obj: Class }) => {
+  @Transform(({ value, obj }: { value: Progress[]; obj: Class }) => {
+    console.log('TRANSFORM VALUE', value, obj);
     if (value && value.length > 0) return value[0];
     const progress = new Progress();
     progress.entityId = obj.id;
     progress.entityType = 'class';
+    progress.progress = 0;
     return progress;
   })
   progresses: Progress[] | null;

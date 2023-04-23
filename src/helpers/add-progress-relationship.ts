@@ -1,4 +1,23 @@
-import { FindManyOptions, FindOneOptions, IsNull } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOneOptions,
+  IsNull,
+  SelectQueryBuilder,
+} from 'typeorm';
+import { Progress } from '@infra/database/entities/profile/progress.entity';
+
+export function addProgress(
+  query: SelectQueryBuilder<any>,
+  profileId: number | undefined,
+) {
+  query.leftJoinAndSelect(
+    Progress,
+    'progress',
+    "progress.entityId = class.id AND progress.entityType = 'class' AND progress.profileId = :profileId",
+    { profileId },
+  );
+  return query;
+}
 
 export function addProgressRelationship<
   T extends FindOneOptions | FindManyOptions,

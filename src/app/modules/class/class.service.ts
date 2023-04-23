@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Class } from '@infra/database/entities/class/class.entity';
-import { addProgressRelationship } from '../../../helpers/add-progress-relationship';
+import { QueryBuilderHelper } from '../../../helpers/query-builder-helper';
 
 @Injectable()
 export class ClassService {
@@ -11,21 +11,26 @@ export class ClassService {
     private readonly repository: Repository<Class>,
   ) {}
 
-  findAll(filters = {}, relations: string[] = [], profileId?: number) {
-    return this.repository.find(
-      addProgressRelationship(profileId, 'class', {
-        where: filters,
-        relations: relations,
-      }),
-    );
+  findAll(
+    filters: Record<string, string> = {},
+    relations: string[] = [],
+    profileId?: number,
+  ) {
+    return QueryBuilderHelper.create(this.repository)
+      .addProgress(profileId)
+      .filterEq('moduleId', filters?.module_id)
+      .filterLikeWords('name', filters?.name)
+      .addRelations(relations)
+      .getQuery()
+      .getMany();
   }
 
   findOne(id: number, relations: string[] = [], profileId?: number) {
-    return this.repository.findOne(
-      addProgressRelationship(profileId, 'class', {
-        where: { id },
-        relations: relations,
-      }),
-    );
+    return QueryBuilderHelper.create(this.repository)
+      .addProgress(profileId)
+      .filterEq('id', id.toString())
+      .addRelations(relations)
+      .getQuery()
+      .getOneOrFail();
   }
 }

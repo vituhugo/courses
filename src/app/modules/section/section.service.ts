@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Section } from '@infra/database/entities/section/section.entity';
 import { Video } from '@infra/database/entities/section/video.entity';
-import { addProgressRelationship } from '../../../helpers/add-progress-relationship';
+import { QueryBuilderHelper } from '../../../helpers/query-builder-helper';
 
 @Injectable()
 export class SectionService {
@@ -19,20 +19,21 @@ export class SectionService {
     relations: string[],
     profileId?: number,
   ) {
-    return this.repository.find(
-      addProgressRelationship(profileId, 'section', {
-        where: filters,
-        relations,
-      }),
-    );
+    return QueryBuilderHelper.create(this.repository)
+      .addProgress(profileId)
+      .filterEq('classId', filters?.class_id)
+      .filterLikeWords('name', filters?.name)
+      .addRelations(relations)
+      .getQuery()
+      .getMany();
   }
 
   findOne(id: number, profileId?: number) {
-    return this.repository.findOneOrFail(
-      addProgressRelationship(profileId, 'section', {
-        where: { id },
-      }),
-    );
+    return QueryBuilderHelper.create(this.repository)
+      .addProgress(profileId)
+      .filterEq('id', id.toString())
+      .getQuery()
+      .getOneOrFail();
   }
 
   async getVideo(id: number) {

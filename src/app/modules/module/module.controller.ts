@@ -3,6 +3,7 @@ import {
   Get,
   HttpException,
   Param,
+  ParseArrayPipe,
   Query,
   Request,
 } from '@nestjs/common';
@@ -16,14 +17,20 @@ export class ModuleController {
   findAll(
     @Request() { user },
     @Query('filters') filters = {},
-    @Query('relations') relations: string[] = [],
+    @Query('relations', new ParseArrayPipe({ optional: true, separator: ',' }))
+    relations: string[] = [],
   ) {
     return this.moduleService.findAll(filters, relations, user?.sub);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() { user }) {
-    return this.moduleService.findOne(+id, user?.sub).catch(() => {
+  findOne(
+    @Param('id') id: string,
+    @Query('relations', new ParseArrayPipe({ optional: true, separator: ',' }))
+    relations: string[] = [],
+    @Request() { user },
+  ) {
+    return this.moduleService.findOne(+id, relations, user?.sub).catch(() => {
       throw new HttpException('Module not found', 404);
     });
   }

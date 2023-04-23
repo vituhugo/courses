@@ -23,6 +23,7 @@ export class Module {
     const progress = new Progress();
     progress.entityId = obj.id;
     progress.entityType = 'module';
+    progress.progress = 0;
     return progress;
   })
   progresses?: Progress[];

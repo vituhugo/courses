@@ -27,7 +27,7 @@ export class SectionController {
   @Get(':id')
   findOne(@Param('id') id: string, @Request() { user }) {
     return this.classPartService.findOne(+id, user?.sub).catch(() => {
-      throw new HttpException('Class part not found', 404);
+      throw new HttpException('Section not found', 404);
     });
   }
 

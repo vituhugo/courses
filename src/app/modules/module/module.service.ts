@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { addProgressRelationship } from '../../../helpers/add-progress-relationship';
 import { Module } from '@infra/database/entities/module/module.entity';
+import { QueryBuilderHelper } from '../../../helpers/query-builder-helper';
 
 @Injectable()
 export class ModuleService {
@@ -16,20 +16,20 @@ export class ModuleService {
     relations: string[],
     profileId?: number,
   ) {
-    return this.repository.find(
-      addProgressRelationship(profileId, 'module', {
-        where: filters,
-        relations: relations,
-      }),
-    );
+    return QueryBuilderHelper.create(this.repository)
+      .addProgress(profileId)
+      .filterLikeWords('name', filters?.name)
+      .addRelations(relations)
+      .getQuery()
+      .getMany();
   }
 
   async findOne(id: number, relations = [], profileId?: number) {
-    return this.repository.findOneOrFail(
-      addProgressRelationship(profileId, 'module', {
-        where: { id },
-        relations: relations,
-      }),
-    );
+    return QueryBuilderHelper.create(this.repository)
+      .addProgress(profileId)
+      .filterEq('id', id.toString())
+      .addRelations(relations)
+      .getQuery()
+      .getOneOrFail();
   }
 }

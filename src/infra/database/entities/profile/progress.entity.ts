@@ -1,7 +1,8 @@
-import { Column, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Exclude, Expose } from 'class-transformer';
-import {Profile} from './profile.entity'
+import { Profile } from './profile.entity';
 
+@Entity()
 export class Progress {
   @PrimaryColumn()
   @Exclude()

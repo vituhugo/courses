@@ -33,6 +33,7 @@ export class Section {
     const progress = new Progress();
     progress.entityId = obj.id;
     progress.entityType = 'section';
+    progress.progress = 0;
     return progress;
   })
   progresses: Progress[] | null;

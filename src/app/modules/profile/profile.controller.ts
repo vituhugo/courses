@@ -9,12 +9,14 @@ import {
   UseGuards,
   HttpException,
   Param,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { AuthenticationGuard } from '../authentication/guard/authentication.guard';
 import { ProgressService } from './services/progress.service';
 import { ProfileService } from './services/profile.service';
+import { EntityNotFoundError } from "typeorm";
 
 @Controller('profile')
 export class ProfileController {
@@ -66,7 +68,17 @@ export class ProfileController {
     @Param('entityType') entityType: string,
     @Param('entityId') entityId: number,
   ) {
-    return this.progressService.findOne(user.sub, entityType, entityId);
+    if (!['class', 'section', 'module'].includes(entityType)) {
+      throw new NotFoundException();
+    }
+
+    return this.progressService
+      .findOne(user.sub, entityType, entityId)
+      .catch((error) => {
+        if (error instanceof EntityNotFoundError) {
+          throw new NotFoundException();
+        }
+      });
   }
 
   @Patch('progress/:entityType/:entityId')
@@ -77,6 +89,10 @@ export class ProfileController {
     @Param('entityId') entityId: number,
     @Body() { progress }: { progress: number },
   ) {
+    if (!['class', 'section', 'module'].includes(entityType)) {
+      throw new NotFoundException();
+    }
+
     return this.progressService.save(user.sub, entityType, progress, entityId);
   }
 }
