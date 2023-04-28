@@ -3,6 +3,9 @@ import { AppModule } from './app/app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { AuthenticationInterceptor } from './app/modules/authentication/filter/authentication.interceptor';
 import { JwtService } from '@nestjs/jwt';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +15,6 @@ async function bootstrap() {
     new ClassSerializerInterceptor(app.get(Reflector)),
   );
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
