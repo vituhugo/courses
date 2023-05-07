@@ -32,42 +32,7 @@ export class SectionController {
   }
 
   @Get(':id/video')
-  async getVideo(
-    @Param('id') id: string,
-    @Response() response: ExpressResponse,
-  ) {
-    const video = await this.classPartService.getVideo(+id);
-    response
-      .status(200)
-      .header('Content-Type', video.mimeType)
-      .header('Content-Length', video.size.toString())
-      .header('Cache-Control', 'no-cache')
-      .header('Connection', 'keep-alive')
-      .header('Pragma', 'no-cache')
-      .header('Expires', '0');
-
-    await new Promise((resolve, reject) => {
-      https.get(video.path, (stream) => {
-        stream.on('error', (error) => {
-          reject(error);
-        });
-        stream.on('close', () => {
-          response.end();
-          resolve(response);
-        });
-        stream.pipe(response);
-      });
-    });
-
-    return response;
-  }
-
-  @Get(':id/video/thumbnail')
-  async getVideoThumbnail(
-    @Param('id') id: string,
-    @Response() response: ExpressResponse,
-  ) {
-    const video = await this.classPartService.getVideo(+id);
-    return response.sendFile(video.thumbnailPath);
+  async getVideo(@Param('id') id: string) {
+    return this.classPartService.getVideo(+id);
   }
 }
