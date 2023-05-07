@@ -8,6 +8,10 @@ export class S3 {
   constructor() {
     this.client = new S3Client({
       region: process.env.AWS_S3_REGION,
+      credentials: {
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: process.env.AWS_ACCESS_KEY,
+      },
     });
   }
   async put(key: string, body: any): Promise<string> {
