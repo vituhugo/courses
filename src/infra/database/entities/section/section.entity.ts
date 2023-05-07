@@ -1,10 +1,10 @@
 import {
   Column,
-  Entity,
+  Entity, JoinColumn,
   ManyToOne,
   OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+  PrimaryGeneratedColumn
+} from "typeorm";
 import { Video } from './video.entity';
 import { Expose, Transform } from "class-transformer";
 import {Class} from '../class/class.entity'
@@ -24,8 +24,8 @@ export class Section {
   @Column()
   classId: number;
 
-  @OneToOne(() => Video)
-  Video: Video;
+  @OneToOne(() => Video, (video) => video.section)
+  video: Video;
 
   @Expose({ name: 'progress' })
   @Transform(({ value, obj }: { value: Progress[], obj: Section }) => {

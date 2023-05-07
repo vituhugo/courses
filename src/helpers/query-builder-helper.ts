@@ -23,8 +23,8 @@ export class QueryBuilderHelper<T> {
       `${alias}.progresses`,
       Progress,
       pAlias,
-      `${pAlias}.entityId = ${alias}.id AND ${pAlias}.entityType = '${entityType}' AND ${pAlias}.profileId = :profileId`,
-      { profileId },
+      `${pAlias}.entityId = ${alias}.id AND ${pAlias}.entityType = '${entityType}'` +
+        (profileId ? `AND ${pAlias}.profileId = ${profileId}` : ''),
     );
     return this;
   }
@@ -73,12 +73,14 @@ export class QueryBuilderHelper<T> {
   addRelations(relations: string[], profileId?: number) {
     relations.forEach((relation) => {
       this.query.leftJoinAndSelect(`${this.alias}.${relation}`, relation);
-      this.query.loadRelationCountAndMap(
-        `${this.alias}.${relation}Count`,
-        `${this.alias}.${relation}`,
-      );
-      if (profileId && ['sections', 'classes', 'modules'].includes(relation)) {
-        this.addProgress(profileId, relation);
+      if (['sections', 'classes', 'modules'].includes(relation)) {
+        this.query.loadRelationCountAndMap(
+          `${this.alias}.${relation}Count`,
+          `${this.alias}.${relation}`,
+        );
+        if (profileId) {
+          this.addProgress(profileId, relation);
+        }
       }
     });
     return this;

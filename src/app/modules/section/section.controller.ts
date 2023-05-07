@@ -6,11 +6,9 @@ import {
   Query,
   Request,
   HttpException,
+  ParseArrayPipe,
 } from '@nestjs/common';
 import { SectionService } from './section.service';
-import { Response as ExpressResponse } from 'express';
-import * as https from 'node:https';
-
 @Controller('section')
 export class SectionController {
   constructor(private readonly classPartService: SectionService) {}
@@ -18,7 +16,8 @@ export class SectionController {
   @Get()
   findAll(
     @Query('filters') filters: Record<string, string> = {},
-    @Query('relations') relations: string[] = [],
+    @Query('relations', new ParseArrayPipe({ optional: true, separator: ',' }))
+    relations: string[] = [],
     @Request() { user },
   ) {
     return this.classPartService.findAll(filters, relations, user?.sub);

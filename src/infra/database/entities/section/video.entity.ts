@@ -1,8 +1,9 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Section } from '@infra/database/entities/section/section.entity';
 
 @Entity()
 export class Video {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
@@ -22,4 +23,8 @@ export class Video {
 
   @Column({ type: 'text', nullable: true })
   summary?: string;
+
+  @OneToOne(() => Section, (section) => section.video)
+  @JoinColumn({ name: 'id' })
+  section: Section;
 }
