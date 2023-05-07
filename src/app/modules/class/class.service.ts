@@ -20,7 +20,7 @@ export class ClassService {
       .addProgress(profileId)
       .filterEq('moduleId', filters?.module_id)
       .filterLikeWords('name', filters?.name)
-      .addRelations(relations)
+      .addRelations(relations, profileId)
       .getQuery()
       .getMany();
   }
@@ -29,7 +29,7 @@ export class ClassService {
     return QueryBuilderHelper.create(this.repository)
       .addProgress(profileId)
       .filterEq('id', id.toString())
-      .addRelations(relations)
+      .addRelations(relations, profileId)
       .getQuery()
       .getOneOrFail();
   }

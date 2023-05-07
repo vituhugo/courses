@@ -32,7 +32,6 @@ export class Class {
 
   @Expose({ name: 'progress' })
   @Transform(({ value, obj }: { value: Progress[]; obj: Class }) => {
-    console.log('TRANSFORM VALUE', value, obj);
     if (value && value.length > 0) return value[0];
     const progress = new Progress();
     progress.entityId = obj.id;
@@ -41,4 +40,18 @@ export class Class {
     return progress;
   })
   progresses: Progress[] | null;
+
+  sectionsCount?: number;
+
+  @Expose({ name: 'sectionsProgressCount' })
+  @Transform(({ obj }) => {
+    return obj.sections
+      ? obj.sections.filter((section) =>
+          section.progresses && section.progresses.length
+            ? section.progresses[0].progress >= 1
+            : false,
+        ).length
+      : null;
+  })
+  sectionsProgressCount?: number;
 }

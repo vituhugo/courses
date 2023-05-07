@@ -14,12 +14,16 @@ export class QueryBuilderHelper<T> {
     );
   }
 
-  addProgress(profileId: number | undefined) {
+  addProgress(profileId: number | undefined, alias = this.alias): this {
+    const entityType =
+      { sections: 'section', classes: 'class', modules: module }[alias] ||
+      alias;
+    const pAlias = alias + 'Progress';
     this.query.leftJoinAndMapMany(
-      `${this.alias}.progresses`,
+      `${alias}.progresses`,
       Progress,
-      'progress',
-      `progress.entityId = ${this.alias}.id AND progress.entityType = '${this.alias}' AND progress.profileId = :profileId`,
+      pAlias,
+      `${pAlias}.entityId = ${alias}.id AND ${pAlias}.entityType = '${entityType}' AND ${pAlias}.profileId = :profileId`,
       { profileId },
     );
     return this;
@@ -66,9 +70,16 @@ export class QueryBuilderHelper<T> {
     return this.query;
   }
 
-  addRelations(relations: string[]) {
+  addRelations(relations: string[], profileId?: number) {
     relations.forEach((relation) => {
       this.query.leftJoinAndSelect(`${this.alias}.${relation}`, relation);
+      this.query.loadRelationCountAndMap(
+        `${this.alias}.${relation}Count`,
+        `${this.alias}.${relation}`,
+      );
+      if (profileId && ['sections', 'classes', 'modules'].includes(relation)) {
+        this.addProgress(profileId, relation);
+      }
     });
     return this;
   }

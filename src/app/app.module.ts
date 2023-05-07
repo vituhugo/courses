@@ -7,6 +7,7 @@ import { ModuleModule } from './modules/module/module.module';
 import { DatabaseModule } from '@infra/database/database.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthenticationModule } from './modules/authentication/authentication.mo
     SectionModule,
     ProfileModule,
     AuthenticationModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

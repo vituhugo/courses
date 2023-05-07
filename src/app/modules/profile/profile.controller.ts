@@ -93,6 +93,6 @@ export class ProfileController {
       throw new NotFoundException();
     }
 
-    return this.progressService.save(user.sub, entityType, progress, entityId);
+    return this.progressService.save(user.sub, progress, entityId);
   }
 }

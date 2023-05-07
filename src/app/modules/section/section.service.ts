@@ -23,7 +23,7 @@ export class SectionService {
       .addProgress(profileId)
       .filterEq('classId', filters?.class_id)
       .filterLikeWords('name', filters?.name)
-      .addRelations(relations)
+      .addRelations(relations, profileId)
       .getQuery()
       .getMany();
   }
