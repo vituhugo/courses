@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Progress } from '@infra/database/entities/profile/progress.entity';
-import { MoreThanOrEqual, Repository } from "typeorm";
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { Class } from '@infra/database/entities/class/class.entity';
 import { Section } from '@infra/database/entities/section/section.entity';
 
@@ -27,34 +27,26 @@ export class ProgressService {
   }
 
   async save(profileId: number, progress: number, entityId: number) {
-    await this.insertOrUpdate(profileId, 'section', progress, entityId);
-    const { classId } = await this.sectionRepository.findOneOrFail({
-      where: { id: entityId },
-    });
-    const classSectionCount = await this.sectionRepository.count({
-      where: { classId },
-    });
-    const classSectionProgressCount = await this.repository.count({
-      where: { profileId, entityType: 'section', progress: 100 },
-    });
+    const entityType = 'section';
 
-    await this.insertOrUpdate(
-      profileId,
-      'class',
-      (classSectionCount / classSectionProgressCount) * 100,
-      classId,
-    );
+    const sectionProgress = await this.repository
+      .findOneByOrFail({
+        entityId,
+        profileId,
+        entityType,
+      })
+      .catch(() =>
+        this.repository.create({
+          entityId,
+          entityType,
+          profileId,
+          progress: 0,
+        }),
+      );
+    sectionProgress.progress = progress;
+    await this.repository.save(sectionProgress);
 
-    // const moduleProgressCount = await this.repository.count({
-    //   where: { profileId, entityType: 'class', progress: MoreThanOrEqual(100) },
-    // });
-
-    await this.insertOrUpdate(
-      profileId,
-      'class',
-      classSectionCount / classSectionProgressCount,
-      classId,
-    );
+    return sectionProgress;
   }
 
   private async insertOrUpdate(

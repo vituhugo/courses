@@ -81,18 +81,13 @@ export class ProfileController {
       });
   }
 
-  @Patch('progress/:entityType/:entityId')
+  @Patch('progress/:entityId')
   @UseGuards(AuthenticationGuard)
   updateProgress(
     @Request() { user },
-    @Param('entityType') entityType: string,
     @Param('entityId') entityId: number,
     @Body() { progress }: { progress: number },
   ) {
-    if (!['class', 'section', 'module'].includes(entityType)) {
-      throw new NotFoundException();
-    }
-
     return this.progressService.save(user.sub, progress, entityId);
   }
 }
